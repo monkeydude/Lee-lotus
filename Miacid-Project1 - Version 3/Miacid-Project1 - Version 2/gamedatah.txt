@@ -1,0 +1,16 @@
+
+	PNG LotusFrontBoard;
+	PNG LotusPlayers;
+	PNG LotusPlayer1;
+	PNG LotusPlayer2;
+	PNG LotusPlayer3;
+	PNG LotusPlayer4;
+	PNG LotusAIRule;
+	PNG LotusAIState;
+	PNG LotusHuman;
+	PNG LotusFinished;
+	PNG LotusNotPlaying;
+	PlayerType player1;
+	PlayerType player2;
+	PlayerType player3;
+	PlayerType player4;

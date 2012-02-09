@@ -1,0 +1,14 @@
+class PlayerType
+{
+	public:
+	bool isPlaying;
+	bool isHuman;
+	bool isRule;
+	
+	PlayerType()
+	{
+	isPlaying=true;
+	isHuman=true;
+	isRule=false;
+	}
+};

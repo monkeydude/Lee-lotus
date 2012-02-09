@@ -1,0 +1,72 @@
+void ChangeAI (bool &isHuman, bool &isRule)
+{
+	if (isHuman)
+	{
+		isHuman=false;
+		isRule=true;
+	}
+	else if (isRule)
+		isRule=false;
+	else if (!isRule && !isHuman)
+		isHuman=true;
+}
+
+
+// Define who is playing the game
+void GameSelectPlayers()
+{
+	// Basic player input with text.
+	int numPlayers = 0;
+	char cInput[256];
+
+	// Enter and validate...
+	while (true)
+	{
+		Point2i mousepos = GameData()->GetLastClick();
+		if (mousepos.x >= 165 && mousepos.x <= 181 && mousepos.y >= 376 && mousepos.y <= 400)
+		{
+			numPlayers = 2;
+			GameData()->player3.isPlaying=false;
+			GameData()->player4.isPlaying=false;
+		}
+		else if (mousepos.x >= 244 && mousepos.x <= 260 && mousepos.y >= 376 && mousepos.y <= 400)
+		{
+			numPlayers = 3;
+			GameData()->player4.isPlaying=false;
+		}
+		else if (mousepos.x >= 323 && mousepos.x <= 341 && mousepos.y >= 376 && mousepos.y <= 400)
+			numPlayers = 4;
+		if (numPlayers >= 2 && numPlayers <= 4)
+			break;
+	}
+
+	// Which players are AI? Player controlled? What type of AI?
+	GameData()->selectPlayerType = 1;
+	for (int i = 0; i < numPlayers; i++)
+	{
+		while (true)
+		{
+			Point2i mousepos = GameData()->GetLastClick();
+			if (mousepos.x >= 100 && mousepos.x <= 228 && mousepos.y >= 300 && mousepos.y <= 364)
+			{
+				ChangeAI(GameData()->player1.isHuman, GameData()->player1.isRule);
+				GameData()->ResetLastClick();
+			}
+			else if (mousepos.x >= 300 && mousepos.x <= 428 && mousepos.y >= 300 && mousepos.y <= 364)
+			{
+				ChangeAI(GameData()->player2.isHuman, GameData()->player2.isRule);
+				GameData()->ResetLastClick();
+			}
+			else if (mousepos.x >= 100 && mousepos.x <= 228 && mousepos.y >= 400 && mousepos.y <= 464)
+			{
+				ChangeAI(GameData()->player3.isHuman, GameData()->player3.isRule);
+				GameData()->ResetLastClick();
+			}
+			else if (mousepos.x >= 300 && mousepos.x <= 428 && mousepos.y >= 400 && mousepos.y <= 464)
+			{
+				ChangeAI(GameData()->player4.isHuman, GameData()->player4.isRule);
+				GameData()->ResetLastClick();
+			}
+			else if (mousepos.x >= 232 && mousepos.x <= 296 && mousepos.y >= 350 && mousepos.y <= 414)
+				break;
+	}

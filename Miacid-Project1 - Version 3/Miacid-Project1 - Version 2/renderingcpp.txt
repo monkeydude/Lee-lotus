@@ -1,0 +1,47 @@
+// The screen displayed to select the number of players
+void RenderSelectPlayers()
+{
+	GameData()->LotusFrontBoard.displayAt(0, 0);
+	if (!GameData()->selectPlayerType)
+		GameData()->LotusPlayers.displayAt(0, 300);
+	else
+	{
+		GameData()->LotusPlayer1.displayAt(100, 300);
+		if (GameData()->player1.isHuman)
+			GameData()->LotusHuman.displayAt(100,325);
+		else if (GameData()->player1.isRule)
+			GameData()->LotusAIRule.displayAt(100,325);
+		else
+			GameData()->LotusAIState.displayAt(100,325);
+		
+		GameData()->LotusPlayer2.displayAt(300, 300);
+		if (GameData()->player2.isHuman)
+			GameData()->LotusHuman.displayAt(300,325);
+		else if (GameData()->player2.isRule)
+			GameData()->LotusAIRule.displayAt(300,325);
+		else
+			GameData()->LotusAIState.displayAt(300,325);
+
+		GameData()->LotusPlayer3.displayAt(100, 400);
+		if (!GameData()->player3.isPlaying)
+			GameData()->LotusNotPlaying.displayAt(100,425);
+		else if (GameData()->player3.isHuman)
+			GameData()->LotusHuman.displayAt(100,425);
+		else if (GameData()->player3.isRule)
+			GameData()->LotusAIRule.displayAt(100,425);
+		else
+			GameData()->LotusAIState.displayAt(100,425);
+
+		GameData()->LotusPlayer4.displayAt(300, 400);
+		if (!GameData()->player4.isPlaying)
+			GameData()->LotusNotPlaying.displayAt(300,425);
+		else if (GameData()->player4.isHuman)
+			GameData()->LotusHuman.displayAt(300,425);
+		else if (GameData()->player4.isRule)
+			GameData()->LotusAIRule.displayAt(300,425);
+		else
+			GameData()->LotusAIState.displayAt(300,425);
+
+		GameData()->LotusFinished.displayAt(232, 350);
+	}
+}
