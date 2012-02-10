@@ -2,7 +2,7 @@
 
 #include "foundation.h"
 #include <vector>
-
+//This is edited
 // Rule-Based Artificial Intelligence
 void PerformAIRuleTurn(Player &player)
 {
