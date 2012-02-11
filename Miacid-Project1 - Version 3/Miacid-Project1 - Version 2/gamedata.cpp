@@ -50,6 +50,9 @@ void GD::ResetLastClick()
 void GD::CreatePlayer()
 {
 	Player newplayer;
+	//CREATE A NEW STATE 5 HERE
+
+	this->states.push_back(5);
 	this->players.push_back(newplayer);
 	this->numplayers++;
 }

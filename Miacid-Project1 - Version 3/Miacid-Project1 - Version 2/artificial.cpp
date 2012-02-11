@@ -2,7 +2,7 @@
 
 #include "foundation.h"
 #include <vector>
-//This is edited
+
 // Rule-Based Artificial Intelligence
 void PerformAIRuleTurn(Player &player)
 {
@@ -237,7 +237,10 @@ void PerformAIRuleTurn(Player &player)
 }
 
 // State-Based Artificial Intelligence
-void PerformAIStateTurn(Player &player)
+void PerformAIStateTurn(Player &player, int &state)
 {
 	// CODE GOES HERE
+	printf("Congratulations, you're a state-motherfucking-based AI");
+	//something like this
+	//state.makeMove();
 }

@@ -45,6 +45,8 @@ public:
 	int numplayers;
 	int currentPlayer;
 	vector<Player> players;
+	//CHANGE THIS TO STATES
+	vector<int> states;
 
 	Scene SceneState;
 

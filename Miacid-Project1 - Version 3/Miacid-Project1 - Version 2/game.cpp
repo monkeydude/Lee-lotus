@@ -111,9 +111,15 @@ void GameMainBoard()
 		if (GameData()->players.at(GameData()->currentPlayer).isHuman)
 			PerformHumanTurn(GameData()->players.at(GameData()->currentPlayer));
 		else if (!GameData()->players.at(GameData()->currentPlayer).isRule)
-			PerformAIStateTurn(GameData()->players.at(GameData()->currentPlayer));
+			PerformAIStateTurn(GameData()->players.at(GameData()->currentPlayer), GameData()->states.at(GameData()->currentPlayer));
 		else // if (!GameData()->players.at(GameData()->currentPlayer).isRule)
 			PerformAIRuleTurn(GameData()->players.at(GameData()->currentPlayer)); // default to the rule AI
+
+
+		//PROBABLY HERE - ADD IN LOGIC TO RE-EVALUATE CURRENT STATE FOR EVERY STATE BASED AI
+
+
+
 
 		// If the player just won the game, then let's exit...
 		if (GameData()->board.PlayerHasWon(GameData()->players.at(GameData()->currentPlayer).piece))
