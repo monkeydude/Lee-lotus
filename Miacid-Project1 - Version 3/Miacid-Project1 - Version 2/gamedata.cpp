@@ -51,8 +51,8 @@ void GD::CreatePlayer()
 {
 	Player newplayer;
 	
-	//Set the start state for this player as state 5
-	this->states.push_back((BaseState*)(new exitingPieceState()));
+	//Set the start state for this player as NULL, it will receive a proper state later once more game data is available for the state to process
+	this->states.push_back(NULL);
 	this->players.push_back(newplayer);
 	this->numplayers++;
 }

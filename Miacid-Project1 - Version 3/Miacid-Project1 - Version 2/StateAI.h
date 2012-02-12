@@ -6,80 +6,67 @@ using namespace std;
 
 //example and sources at http://advancedcppwithexamples.blogspot.com/2010/11/c-example-of-state-design-pattern.html
  
- // The 'BaseState' abstract class for the stateAI
-class BaseState
-{
+// The 'BaseState' abstract class for the stateAI
+class BaseState{
 public:
-
   string GetStateName(void);
 
   //these will occur in the concrete states
   virtual void movePiece(void) = 0;
-  virtual void StateChangeCheck(int, int) = 0;
+  virtual boolean StateChangeCheck(int, int) = 0;
+  int findState(PIECE);
 
 protected:
   vector<int> validMoves_;
-  string stateName_;;
+  PIECE playernum;
+  string stateName_;
+  boolean checkPos(vector<int>, int);
+  int isState(int);
 };
  
 // A 'ConcreteState' class
 // The AI has a piece that can exit this turn
-class exitingPieceState : BaseState
-{
+class exitingPieceState : BaseState{
 public:
-  exitingPieceState(/*BaseState* state*/);
+  exitingPieceState(PIECE);
   void movePiece();
-  void StateChangeCheck(int, int);//two ints
- 
-private:
+  boolean StateChangeCheck(int, int);
 };
 
 // A 'ConcreteState' class
 // The AI can use the trampoline space
-class useTrampState : BaseState
-{
+class useTrampState : BaseState{
 public:
-  useTrampState(BaseState* state);
+  useTrampState(PIECE);
   void movePiece();
-  void StateChangeCheck(int, int);//two ints
- 
-private:
+  boolean StateChangeCheck(int, int);
 };
 
 // A 'ConcreteState' class
 // The AI can capture a stack so that its next move allows it to use the trampoline
-class captureTrampState : BaseState
-{
+class captureTrampState : BaseState{
 public:
-  captureTrampState(BaseState* state);
+  captureTrampState(PIECE);
   void movePiece();
-  void StateChangeCheck(int, int);//two ints
- 
-private:
+  boolean StateChangeCheck(int, int);
 };
 
 // A 'ConcreteState' class
 // The AI has a piece that can exit this turn
-class captureStackState : BaseState
-{
+class captureStackState : BaseState{
 public:
-  captureStackState(BaseState* state);
+  captureStackState(PIECE);
   void movePiece();
-  void StateChangeCheck(int, int);//two ints
- 
-private:
+  boolean StateChangeCheck(int, int);
 };
 
 // A 'ConcreteState' class
 // The AI only has pieces which don't fit into higher priority states.
-class movePieceState : BaseState
-{
+class movePieceState : BaseState{
 public:
-  movePieceState(BaseState* state);
+  movePieceState(PIECE);
   void movePiece();
-  void StateChangeCheck(int, int);//two ints
- 
-private:
+  boolean StateChangeCheck(int, int);//two ints
 };
 
 // A 'ConcreteState' class
@@ -87,11 +74,11 @@ private:
 class cantMoveState : BaseState
 {
 public:
-  cantMoveState(BaseState* state);
+  cantMoveState(PIECE);
   void movePiece();
-  void StateChangeCheck(int, int);//two ints
- 
+  boolean StateChangeCheck(int, int);//two ints
 private:
+	int deepest;
 };
  
 #endif

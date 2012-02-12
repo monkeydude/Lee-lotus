@@ -35,6 +35,8 @@ private:
 	PNG * units[4];
 	PNG * numbers[24];
 
+	void UpdateStateAIs(int, int);
+
 public:
 	int numstartstacks;
 
@@ -50,6 +52,7 @@ public:
 	void SetNumbers(PNG img_num[24]);
 
 	PIECE GetTopPiece(int pos);
+	int GetDeepestPiece(PIECE player, int pos);
 
 	bool GetLocationFromXY(int x, int y, int &result);
 
