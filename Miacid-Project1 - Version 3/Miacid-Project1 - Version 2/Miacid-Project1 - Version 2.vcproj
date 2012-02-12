@@ -190,11 +190,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\State.cpp"
+				RelativePath=".\StateAI.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\State.h"
+				RelativePath=".\StateAI.h"
 				>
 			</File>
 		</Filter>

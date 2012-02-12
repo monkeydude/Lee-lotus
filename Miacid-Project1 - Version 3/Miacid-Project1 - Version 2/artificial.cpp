@@ -237,10 +237,8 @@ void PerformAIRuleTurn(Player &player)
 }
 
 // State-Based Artificial Intelligence
-void PerformAIStateTurn(Player &player, int &state)
+void PerformAIStateTurn(Player &player, BaseState* &state)
 {
-	// CODE GOES HERE
-	printf("Congratulations, you're a state-motherfucking-based AI");
-	//something like this
-	//state.makeMove();
+	//run the move piece code that pertains to the current state of this AI
+	state->movePiece();
 }

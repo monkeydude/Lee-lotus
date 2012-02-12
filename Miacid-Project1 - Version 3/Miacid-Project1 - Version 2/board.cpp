@@ -343,8 +343,7 @@ bool Board::MovePiece(int begin, int end = -1)
 			//Re-evaluate the state for each state-based AI
 			for (int a=0; a<4; a++){
 				if (!GameData()->players.at(a).isHuman && !GameData()->players.at(a).isRule){
-					printf("Reeeeev %d\n", a);
-					//GameData()->states.at(a).reevaluate(begin, end);
+					GameData()->states.at(a)->StateChangeCheck(begin, end);
 				}
 			}
 
@@ -399,8 +398,7 @@ bool Board::MovePiece(int begin, int end = -1)
 				//Re-evaluate the state for each state-based AI
 				for (int a=0; a<4; a++){
 					if (!GameData()->players.at(a).isHuman && !GameData()->players.at(a).isRule){
-						printf("Reeeeev %d\n", a);
-						//GameData()->states.at(a).reevaluate(begin, end);
+						GameData()->states.at(a)->StateChangeCheck(begin, end);
 					}
 				}
 
@@ -424,8 +422,7 @@ bool Board::MovePiece(int begin, int end = -1)
 			//Re-evaluate the state for each state-based AI
 			for (int a=0; a<4; a++){
 				if (!GameData()->players.at(a).isHuman && !GameData()->players.at(a).isRule){
-					printf("Reeeeev %d\n", a);
-					//GameData()->states.at(a).reevaluate(begin, end);
+					GameData()->states.at(a)->StateChangeCheck(begin, end);
 				}
 			}
 
@@ -470,8 +467,7 @@ bool Board::MovePiece(int begin, int end = -1)
 				//Re-evaluate the state for each state-based AI
 				for (int a=0; a<4; a++){
 					if (!GameData()->players.at(a).isHuman && !GameData()->players.at(a).isRule){
-						printf("Reeeeev %d\n", a);
-						//GameData()->states.at(a).reevaluate(begin, end);
+						GameData()->states.at(a)->StateChangeCheck(begin, end);
 					}
 				}
 
@@ -507,8 +503,7 @@ bool Board::MovePiece(int begin, int end = -1)
 					//Re-evaluate the state for each state-based AI
 					for (int a=0; a<4; a++){
 						if (!GameData()->players.at(a).isHuman && !GameData()->players.at(a).isRule){
-							printf("Reeeeev %d\n", a);
-							//GameData()->states.at(a).reevaluate(begin, end);
+							GameData()->states.at(a)->StateChangeCheck(begin, end);
 						}
 					}
 
@@ -531,8 +526,7 @@ bool Board::MovePiece(int begin, int end = -1)
 					//Re-evaluate the state for each state-based AI
 					for (int a=0; a<4; a++){
 						if (!GameData()->players.at(a).isHuman && !GameData()->players.at(a).isRule){
-							printf("Reeeeev %d\n", a);
-							//GameData()->states.at(a).reevaluate(begin, end);
+							GameData()->states.at(a)->StateChangeCheck(begin, end);
 						}
 					}
 

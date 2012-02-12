@@ -1,6 +1,8 @@
 #ifndef GAMEDATA_H
 #define GAMEDATA_H
 
+#include "StateAI.h"
+
 enum Scene {SCENE_DEFAULT, SCENE_SELECT_PLAYERS, SCENE_MAINBOARD, SCENE_RESULTS};
 
 class GD
@@ -16,7 +18,6 @@ public:
 	PNG LotusBlue;
 	PNG LotusNumbers[24];
 
-	//
 	PNG LotusTurn;
 	PNG LotusWinner;
 	PNG LotusFrontBoard;
@@ -34,7 +35,6 @@ public:
 	PlayerType player2;
 	PlayerType player3;
 	PlayerType player4;
-	//
 
 	bool gLoaded;
 	bool gRunning;
@@ -45,8 +45,9 @@ public:
 	int numplayers;
 	int currentPlayer;
 	vector<Player> players;
-	//CHANGE THIS TO STATES
-	vector<int> states;
+	//vector of states where each position refers to the state of that player (some positions will never be used if that player is not a state AI)
+	vector<BaseState*> states;
+
 
 	Scene SceneState;
 
