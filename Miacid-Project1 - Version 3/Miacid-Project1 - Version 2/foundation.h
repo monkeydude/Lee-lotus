@@ -10,6 +10,8 @@
 #include <math.h>
 #include <cmath>
 #include <iostream>
+#include <algorithm>
+#include <functional>
 
 // OpenGL
 #pragma comment(lib, "glaux.lib")
