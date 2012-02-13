@@ -418,7 +418,7 @@ bool Board::MovePiece(int begin, int end = -1)
 				// Jump to the end?
 				printf("moving piece from %i to %i over distance %i\n", begin, end, distance*2);
 					
-				UpdateStateAIs(begin, end);
+				
 
 				if (end == MAX_GAME_POSITIONS)
 					this->finish.push_back(this->position[begin].top());
@@ -426,6 +426,8 @@ bool Board::MovePiece(int begin, int end = -1)
 					this->position[end].push(this->position[begin].top());
 
 				this->position[begin].pop();
+
+				UpdateStateAIs(begin, end);
 
 				// Assume you did this just to move forward :|
 				GameData()->RecordMove(TM_FORWARD);
@@ -508,7 +510,7 @@ bool Board::MovePiece(int begin, int end = -1)
 					// Jump to the end?
 					printf("moving piece from %i to %i over distance %i\n", begin, end, distance);
 					
-					UpdateStateAIs(begin, end);
+					
 
 					if (end == MAX_GAME_POSITIONS)
 						this->finish.push_back(this->position[begin].top());
@@ -516,6 +518,8 @@ bool Board::MovePiece(int begin, int end = -1)
 						this->position[end].push(this->position[begin].top());
 
 					this->position[begin].pop();
+
+					UpdateStateAIs(begin, end);
 
 					// Assume you did this to move forward
 					GameData()->RecordMove(TM_FORWARD);
@@ -526,10 +530,12 @@ bool Board::MovePiece(int begin, int end = -1)
 					// Normal movement
 					printf("moving piece from %i to %i over distance %i\n", begin, end, distance);
 
-					UpdateStateAIs(begin, end);
+					
 
 					this->position[end].push(this->position[begin].top());
 					this->position[begin].pop();
+
+					UpdateStateAIs(begin, end);
 
 					// Was this an attack?
 					if (this->position[end].size() > 2) //significant stack size
@@ -705,7 +711,7 @@ int Board::IsLocGood(int x1, int y1)
 
 void Board::UpdateStateAIs(int begin, int end){
 
-	printf("P1 deepest at 0 is %d\n", GetDeepestPiece(PIECE_P1, 0));
+	//printf("P1 deepest at 0 is %d\n", GetDeepestPiece(PIECE_P1, 0));
 
 	//Re-evaluate the state for each state-based AI
 	for (int a=0; a<4; a++){
@@ -737,7 +743,7 @@ void Board::UpdateStateAIs(int begin, int end){
 						GameData()->states.at(a) = (BaseState*)(new movePieceState(GameData()->players.at(a).piece));
 						break;
 					case 6:
-						GameData()->states.at(a) = (BaseState*)(new exitingPieceState(GameData()->players.at(a).piece));
+						GameData()->states.at(a) = (BaseState*)(new cantMoveState(GameData()->players.at(a).piece));
 						break;
 				}
 			}

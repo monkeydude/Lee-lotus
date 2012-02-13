@@ -3,104 +3,47 @@
 #include "foundation.h"
 #include <vector>
 
-// Rule-Based Artificial Intelligence
-void PerformAIRuleTurn(Player &player)
+class Move //CHG-D-01
 {
-	// Create a vector of rules that are of interest
-	vector<TRule*> valid;
-	TRule * curRule;
+  public:
+	  Move(TMove useMov): useMov_(useMov){}
 
-	// Keep track of the last rule fired. We will need it later on to check if you were attacked to reduce the weight.
-	static int lastRuleFired = -1;
+	  void format(TMove useMove, int ruleToFire, int topWeight, int highest,
+		  int distance, int movepos, int potend, int endpos, int moveid, int path, bool moveUseful, 
+		  vector<int> possibleActiveMoves, vector<int> possibleStartMoves, Player &player){ ////CHG-D-05
 
-	// Flag the rules that matched
-	for (int i = 0; i < GameData()->Rules.size(); i++)
-	{
-		curRule = &(GameData()->Rules.at(i));
+		executeMove(useMove, ruleToFire, topWeight, highest,
+		   distance, movepos, potend, endpos, moveid,  path, moveUseful, 
+		   possibleActiveMoves, possibleStartMoves, player); //CHG-D-06
 
-		if (curRule->last == GameData()->Moves.at(0) && curRule->secondLast == GameData()->Moves.at(1) && 
-			curRule->thirdLast == GameData()->Moves.at(2))
-			valid.push_back(&(GameData()->Rules.at(i)));
-	}
 
-	// Decide which rule to use based on the valid list and given weights
-	int ruleToFire = -1;
-	int topWeight = 0;
-	int highest = 0;
-	int distance = 0;
-	int movepos = -1;
-	int potend = -1;
-	int endpos = 0;
-	int moveid = 0;
-	int path = 0; //left or right (0 and less or 1 or above)
+	  }
+protected:
+	TMove useMov_;
+private:
+    virtual void executeMove(TMove useMove, int ruleToFire, int topWeight, int highest,
+		  int distance, int movepos, int potend, int endpos, int moveid, int path, bool moveUseful, 
+		  vector<int> possibleActiveMoves, vector<int> possibleStartMoves, Player &player) = 0; //CHG-D-06
+};
 
-	for (int i = 0; i < valid.size(); i++)
-	{
-		if (ruleToFire == -1)
-		{
-			ruleToFire = valid.at(i)->rulenum;
-			topWeight = valid.at(i)->weight;
-		}
-		else if (valid.at(i)->weight > topWeight)
-		{
-			ruleToFire = valid.at(i)->rulenum;
-			topWeight = valid.at(i)->weight;
-		}
-	}
 
-	// Need to find the use in the move...
-	bool moveUseful = 1; // assume the move was useful; tell us if it wasn't.
-	TMove useMove = GameData()->Rules.at(ruleToFire).result;
 
-	// Find active pieces on the board
-	vector<int> possibleActiveMoves;
 
-	for (int i = 0; i < MAX_GAME_POSITIONS; i++)
-	{
-		if (GameData()->board.IsPieceOnTop(player.piece, i))
-			possibleActiveMoves.push_back(i);
-	}
 
-	vector<int> possibleStartMoves;
+class Attack: public Move //CHG-D-02
+{
+  public:
+	  Attack(TMove useMov): Move(useMov){}
 
-	for (int i = -1; i >= -GameData()->board.numstartstacks; i--)
-	{
-		if (GameData()->board.IsPieceOnTop(player.piece, i))
-			possibleStartMoves.push_back(i);
-	}
 
-	if (possibleActiveMoves.empty())
-	{
-		switch (useMove)
-		{
-			case TM_ATTACK:
-			case TM_FORWARD:
-				moveUseful = 0;
-				useMove = TM_START;
-			break;
-		}
-	}
+	private:
+     /* virtual */void executeMove(TMove useMove, int ruleToFire, int topWeight, int highest,
+		  int distance, int movepos, int potend, int endpos, int moveid, int path, bool moveUseful, 
+		  vector<int> possibleActiveMoves, vector<int> possibleStartMoves, Player &player) //CHG-D-06
+    {
 
-	if (possibleStartMoves.empty())
-	{
-		switch (useMove)
-		{
-			case TM_START:
-				moveUseful = 0;
-				useMove = TM_FORWARD;
-			break;
-		}
-	}
 
-	// Actually perform the selected move
-	switch (useMove)
-	{
-		case TM_ATTACK:
-			// Make a piece attack a large stack
-			// Useful if there is a large stack to jump on
-
-			// Find a large stack that can be jumped on
-			highest = -1; // reset
+	highest = -1; // reset
 			for (int i = 0; i < (signed)possibleActiveMoves.size(); i++)
 			{
 				// Get numbers
@@ -124,14 +67,22 @@ void PerformAIRuleTurn(Player &player)
 			if (highest < 2) // small stack -> not very useful
 				moveUseful = 0;
 
-		break;
 
-		case TM_FORWARD:
-			// Move a piece forward by the stack size
-			// Useful if the lap was significant
 
-			// Seek the farthest move ahead
-			distance = -1; //reset
+    }
+};
+
+class Forward: public Move //CHG-D-03
+{
+  public:
+	  Forward(TMove useMov): Move(useMov){}
+	 private:
+     /* virtual */void executeMove(TMove useMove, int ruleToFire, int topWeight, int highest,
+		  int distance, int movepos, int potend, int endpos, int moveid, int path, bool moveUseful, 
+		  vector<int> possibleActiveMoves, vector<int> possibleStartMoves, Player &player) //CHG-D-06
+    {
+
+		distance = -1; //reset
 
 			for (int i = 0; i < (signed)possibleActiveMoves.size(); i++)
 			{
@@ -155,11 +106,20 @@ void PerformAIRuleTurn(Player &player)
 				moveUseful = 0;
 
 			GameData()->board.MovePiece(movepos, -1);
+    }
+};
 
-		break;
+class Start: public Move //CHG-D-04
+{
+  public:
+	  Start(TMove useMov): Move(useMov){}
+	  private:
+     /* virtual */void executeMove(TMove useMove, int ruleToFire, int topWeight, int highest,
+		  int distance, int movepos, int potend, int endpos, int moveid, int path, bool moveUseful, 
+		  vector<int> possibleActiveMoves, vector<int> possibleStartMoves, Player &player) //CHG-D-06
+    {
 
-		case TM_START:
-			// Take out a piece from the start if possible
+		// Take out a piece from the start if possible
 			// Otherwise perform a random action...
 			// Useful if the start piece can jump on top of another stack
 			// Not useful if a random move needed to be performed
@@ -220,8 +180,163 @@ void PerformAIRuleTurn(Player &player)
 
 			// Update and and change your state
 			GameData()->board.MovePiece(movepos, endpos);
+    }
+};
 
-		break;
+void setMove(TMove useMove, Move *move_){ //CHG-D-08
+	delete move_;
+	switch (useMove){
+
+		case TM_ATTACK:
+			cout<<"testtting"<<endl;
+			move_ = new Attack(useMove);
+			break;
+		case TM_FORWARD:
+			move_ = new Forward(useMove);
+			break;
+		case TM_START:
+			move_ = new Start(useMove);
+			break;
+		default:
+			move_ = NULL;
+			break;
+	}
+}
+
+void doIt(Move *move_, TMove useMove, int ruleToFire, int topWeight, int highest,
+		  int distance, int movepos, int potend, int endpos, int moveid, int path, bool moveUseful, 
+		  vector<int> possibleActiveMoves, vector<int> possibleStartMoves, Player &player){ //CHG-D-09
+	//cout<<"test1"<<endl;
+
+	move_->format(useMove, ruleToFire, topWeight, highest,
+		   distance, movepos, potend, endpos, moveid,  path, moveUseful, 
+		   possibleActiveMoves, possibleStartMoves, player);
+}
+
+
+
+// Rule-Based Artificial Intelligence
+void PerformAIRuleTurn(Player &player)
+{
+	// Create a vector of rules that are of interest
+	vector<TRule*> valid;
+	TRule * curRule;
+	Move *move_; //CHG-D-010
+	move_=NULL;
+
+	// Keep track of the last rule fired. We will need it later on to check if you were attacked to reduce the weight.
+	static int lastRuleFired = -1;
+
+	// Flag the rules that matched
+	for (int i = 0; i < GameData()->Rules.size(); i++)
+	{
+		curRule = &(GameData()->Rules.at(i));
+
+		if (curRule->last == GameData()->Moves.at(0) && curRule->secondLast == GameData()->Moves.at(1) && 
+			curRule->thirdLast == GameData()->Moves.at(2))
+			valid.push_back(&(GameData()->Rules.at(i)));
+	}
+
+	// Decide which rule to use based on the valid list and given weights
+	int ruleToFire = -1;
+	int topWeight = 0;
+	int highest = 0;
+	int distance = 0;
+	int movepos = -1;
+	int potend = -1;
+	int endpos = 0;
+	int moveid = 0;
+	int path = 0; //left or right (0 and less or 1 or above)
+
+
+	for (int i = 0; i < valid.size(); i++)
+	{
+		if (ruleToFire == -1)
+		{
+			ruleToFire = valid.at(i)->rulenum;
+			topWeight = valid.at(i)->weight;
+		}
+		else if (valid.at(i)->weight > topWeight)
+		{
+			ruleToFire = valid.at(i)->rulenum;
+			topWeight = valid.at(i)->weight;
+		}
+	}
+
+	// Need to find the use in the move...
+	bool moveUseful = 1; // assume the move was useful; tell us if it wasn't.
+	TMove useMove = GameData()->Rules.at(ruleToFire).result;
+
+	// Find active pieces on the board
+	vector<int> possibleActiveMoves;
+
+	for (int i = 0; i < MAX_GAME_POSITIONS; i++)
+	{
+		if (GameData()->board.IsPieceOnTop(player.piece, i))
+			possibleActiveMoves.push_back(i);
+	}
+
+	vector<int> possibleStartMoves;
+
+	for (int i = -1; i >= -GameData()->board.numstartstacks; i--)
+	{
+		if (GameData()->board.IsPieceOnTop(player.piece, i))
+			possibleStartMoves.push_back(i);
+	}
+
+	if (possibleActiveMoves.empty())
+	{
+		switch (useMove)
+		{
+			case TM_ATTACK:
+			case TM_FORWARD:
+				moveUseful = 0;
+				useMove = TM_START;
+			break;
+		}
+	}
+
+	if (possibleStartMoves.empty())
+	{
+		switch (useMove)
+		{
+			case TM_START:
+				moveUseful = 0;
+				useMove = TM_FORWARD;
+			break;
+		}
+	}
+
+
+	//setMove(useMove, move_);  
+	//doIt(move_, useMove, ruleToFire, topWeight, highest, distance, movepos, potend, endpos, moveid, path,
+	//				moveUseful, possibleActiveMoves, possibleStartMoves, player);
+	//This is what is supposed to run, 
+	//however the setMove function would not let me properly set the move variable, so it was done manually
+
+	delete move_;
+	// Actually perform the selected move
+	switch (useMove) //CHG-D-07
+	{
+		case TM_ATTACK:
+			move_ = new Attack(useMove);
+
+			doIt(move_, useMove, ruleToFire, topWeight, highest, distance, movepos, potend, endpos, moveid, path,
+					moveUseful, possibleActiveMoves, possibleStartMoves, player);
+			break;
+
+		case TM_FORWARD:
+
+			move_ = new Forward(useMove);
+			doIt(move_, useMove, ruleToFire, topWeight, highest, distance, movepos, potend, endpos, moveid, path,
+					moveUseful, possibleActiveMoves, possibleStartMoves, player);
+			break;
+
+		case TM_START:
+			move_ = new Start(useMove);
+			doIt(move_, useMove, ruleToFire, topWeight, highest, distance, movepos, potend, endpos, moveid, path,
+					moveUseful, possibleActiveMoves, possibleStartMoves, player);
+			break;
 
 		default:
 			// Do nothing; your move was useless
@@ -243,8 +358,8 @@ void PerformAIStateTurn(Player &player, BaseState* &state)
 	if (GameData()->states.at(GameData()->currentPlayer) == NULL){
 		GameData()->states.at(GameData()->currentPlayer) = (BaseState*)(new movePieceState(GameData()->players.at(GameData()->currentPlayer).piece));
 	}
-	else{
+	//else{
 		//run the move piece code that pertains to the current state of this AI
 		state->movePiece();
-	}
+	//}
 }

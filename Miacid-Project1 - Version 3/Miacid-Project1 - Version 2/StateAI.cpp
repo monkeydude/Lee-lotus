@@ -7,6 +7,14 @@ string BaseState::GetStateName(void){
 	return stateName_;
 }
 
+void BaseState::printValidMoves(void){
+	cout << "P" << GameData()->currentPlayer <<" for State: " << stateName_ << ", Valid moves: ";
+	for (int x=0;x<validMoves_.size();x++){
+		cout << validMoves_[x] <<",";
+	}
+	cout<<endl;
+}
+
 //checks if a move exists within a vector
 boolean BaseState::checkPos(vector<int> vec, int pos){
 	for each (int a in vec){
@@ -45,12 +53,16 @@ int BaseState::isState(int pos){
 	else if ((dest == 10) && (GameData()->board.GetSizeOfStack(pos) >= 2)){
 		return 2;
 	}
-	else if ((dest < 9) && ((GameData()->board.GetSizeOfStack(dest) + dest) == 10)){
+	else if ((dest < 9) && ((GameData()->board.GetSizeOfStack(dest) + dest) == 9)){
 		return 3;
 	}
 	else if (GameData()->board.GetSizeOfStack(dest) >= 2){
 		return 4;
 	}
+	//this is to check for captures on the right hand track of the start split
+	else if ((dest >= 0) && (dest <=2) && (GameData()->board.GetSizeOfStack(dest+3) >= 2)){
+		return 4;
+ }
 	else{
 		return 5;
 	}
@@ -88,6 +100,7 @@ exitingPieceState::exitingPieceState(PIECE playnum){
 	}
 
 	stateName_ = "exitingPiece";
+	cout << "Entered State: " << stateName_ <<endl<<endl;
 }
 
 void exitingPieceState::movePiece(){
@@ -96,10 +109,17 @@ void exitingPieceState::movePiece(){
 	std::sort(validMoves_.begin(), validMoves_.end());
 	//get a piece from the vector list
 	toMove = validMoves_.back();
+	
+	printValidMoves();
+
 	//remove last element
 	validMoves_.pop_back();
 
 	GameData()->board.MovePiece(toMove, -1);
+	cout << "After moving piece: ";
+	printValidMoves();
+	cout<<endl;
+
 }
 
 
@@ -162,6 +182,7 @@ useTrampState::useTrampState(PIECE playnum){
 	}
 
 	stateName_ = "useTrampPiece";
+	cout << "Entered State: " << stateName_ <<endl<<endl;
 }
 
 void useTrampState::movePiece(){
@@ -170,11 +191,19 @@ void useTrampState::movePiece(){
 	std::sort(validMoves_.begin(), validMoves_.end(),greater<int>());
 	//get a piece from the vector list
 	toMove = validMoves_.back();
+
+	printValidMoves();
+
 	//remove last element
 	validMoves_.pop_back();
 
 	//tells to move piece
 	GameData()->board.MovePiece(toMove, -1);
+	
+	cout << "After moving piece: ";
+	printValidMoves();
+	cout<<endl;
+
 }
 
 boolean useTrampState::StateChangeCheck(int source, int destination){
@@ -250,6 +279,7 @@ captureTrampState::captureTrampState(PIECE playnum){
 	}
 
 	stateName_ = "captureTrampPiece";
+	cout << "Entered State: " << stateName_ <<endl<<endl;
 }
 
 void captureTrampState::movePiece(){
@@ -257,11 +287,19 @@ void captureTrampState::movePiece(){
 
 	//get a piece from the vector list
 	toMove = validMoves_.back();
+
+	printValidMoves();
+
 	//remove last element
 	validMoves_.pop_back();
 
 	//tells to move piece
 	GameData()->board.MovePiece(toMove, -1);
+
+	cout << "After moving piece: ";
+	printValidMoves();
+	cout<<endl;
+
 }
 
 boolean captureTrampState::StateChangeCheck(int source, int destination){
@@ -337,7 +375,8 @@ captureStackState::captureStackState(PIECE playnum){
 		}
 	}
 
-	stateName_ = "captureStackPiece";
+	stateName_ = "captureStack";
+	cout << "Entered State: " << stateName_ <<endl<<endl;
 }
 
 void captureStackState::movePiece(){
@@ -349,6 +388,9 @@ void captureStackState::movePiece(){
 	int finalLoc = validMoves_.front();
 	int finalEnd = -1;
 	int finalCap = 0;
+
+	cout << "\nStart of Capture Stack State" <<endl;
+	printValidMoves();
 
 	for (int x = 0; x<validMoves_.size();x++){
 
@@ -394,11 +436,12 @@ void captureStackState::movePiece(){
 					captureValue=GameData()->board.GetSizeOfStack(6);
 					break;
 
-				default: cout << "I BROKE: captureStackState" <<endl;
+				default: cout << "I BROKE: " << stateName_ <<endl;
 					break;
 			}
 
 		}
+
 
 		else{
 		// itmust be a piece on the board, aka no L|R checking
@@ -415,13 +458,23 @@ void captureStackState::movePiece(){
 		}
 
 	}
+	
+	//remove from stack that piece
+	validMoves_.erase(validMoves_.begin()+toErase);
+
 	//add it to the board
 	GameData()->board.MovePiece(finalLoc, finalEnd);
-	//remove the stack from possible choices
-	validMoves_.erase(validMoves_.begin()+toErase);
+	cout << "After Move Call" <<endl;
+	printValidMoves();
+	cout<<endl;
+	
 }
 
 boolean captureStackState::StateChangeCheck(int source, int destination){
+
+	//if state 3 has become valid
+		if (stateThreeCheck(source, destination))
+			return true;
 
 	//if the new top piece on the source belongs to this AI
 	if (GameData()->board.IsPieceOnTop(playernum, source)){
@@ -495,6 +548,7 @@ movePieceState::movePieceState(PIECE playnum){
 	}
 
 	stateName_ = "movePiece";
+	cout << "Entered State: " << stateName_ <<endl<<endl;
 }
 
 void movePieceState::movePiece(){
@@ -502,6 +556,9 @@ void movePieceState::movePiece(){
 
 	//get a piece from the vector list
 	toMove = validMoves_.back();
+
+	printValidMoves();
+
 	//remove last element
 	validMoves_.pop_back();
 
@@ -516,6 +573,8 @@ void movePieceState::movePiece(){
 					else{
 						GameData()->board.MovePiece(toMove, 0);	//move to left				
 					}
+				cout << "After moving piece: ";
+				printValidMoves();
 				return;
 
 			case 2:
@@ -525,6 +584,8 @@ void movePieceState::movePiece(){
 					else{
 						GameData()->board.MovePiece(toMove, 1);	//move to left				
 					}
+				cout << "After moving piece: ";
+				printValidMoves();
 				return;
 
 			case 3:
@@ -534,22 +595,47 @@ void movePieceState::movePiece(){
 					else{
 						GameData()->board.MovePiece(toMove, 2);	//move to left				
 					}
+				cout << "After moving piece: ";
+				printValidMoves();
 				return;
 
 			case 4:
 				GameData()->board.MovePiece(toMove, 6);
+				cout << "After moving piece: ";
+				printValidMoves();
 				return;
 
-			default: cout << "I BROKE" <<endl;
+			default: cout << "I BROKE: ";
+					 printValidMoves();
 				break;
 		}
 
 	}
 
 	GameData()->board.MovePiece(toMove, -1);
+	
+	cout << "After moving piece: ";
+	printValidMoves();
+	cout<<endl;
+
 }
 
 boolean movePieceState::StateChangeCheck(int source, int destination){
+ //if state 3 has become valid
+	if (stateThreeCheck(source, destination))
+	return true;
+
+	//if the destination stack is 2 or larger
+	else if (GameData()->board.GetSizeOfStack(destination) >= 2){
+	  //check every stack before it
+	  for (int a=-12; a<destination; a++){
+	   //if the top piece belongs to this AI and it falls into state 4
+	   //then invalidate this state
+	   if ((GameData()->board.IsPieceOnTop(playernum, a)) && (isState(a) == 4)){
+		return true;
+	   }
+	  }
+	 }
 
 	//if the new top piece on the source belongs to this AI
 	if (GameData()->board.IsPieceOnTop(playernum, source)){
@@ -615,6 +701,7 @@ cantMoveState::cantMoveState(PIECE playnum){
 
 	playernum = playnum;
 	stateName_ = "cantMovePiece";
+	cout << "Entered State: " << stateName_ <<endl<<endl;
 }
 
 void cantMoveState::movePiece(){
@@ -622,7 +709,7 @@ void cantMoveState::movePiece(){
 	int pos;
 
 	//find the stack in which your piece is deepest
-	for (int a=-12; a<17; a++){
+	for (int a=0; a<17; a++){
 		if (GameData()->board.GetDeepestPiece(playernum, a) > deepest){
 			pos = GameData()->board.GetDeepestPiece(playernum, a);
 		}
@@ -635,11 +722,19 @@ void cantMoveState::movePiece(){
 
 	//get a piece from the vector list
 	toMove = validMoves_.back();
+
+	printValidMoves();
+
 	//remove last element
 	validMoves_.pop_back();
 
 	//tells to move piece
 	GameData()->board.MovePiece(toMove, -1);
+	
+	cout << "After moving piece: ";
+	printValidMoves();
+	cout<<endl;
+
 }
 
 //no need to check if the state can get worse (it can't)
@@ -658,4 +753,31 @@ boolean cantMoveState::StateChangeCheck(int source, int destination){
 	}
 
 	return false;
+}
+
+boolean BaseState::stateThreeCheck(int source, int destination){
+        //if the destination could launch the next piece that lands on it to the tramp
+        if ((9 - GameData()->board.GetSizeOfStack(destination)) == destination){
+                //check every stack before it
+                for (int a=-12; a<destination; a++){
+                        //if the top piece belongs to this AI and it falls into state 3
+                        //then invalidate this state
+                        if ((GameData()->board.IsPieceOnTop(playernum, a)) && (isState(a) == 3)){
+                                return true;
+                        }
+                }
+        }
+        //otherwise if the source could launch the next piece that lands on it to the tramp
+        else if ((9 - GameData()->board.GetSizeOfStack(source)) == source){
+                //check every stack before it
+                for (int a=-12; a<source; a++){
+                        //if the top piece belongs to this AI and it falls into state 3
+                        //then invalidate this state
+                        if ((GameData()->board.IsPieceOnTop(playernum, a)) && (isState(a) == 3)){
+                                return true;
+                        }
+                }
+        }
+ 
+        return false;
 }

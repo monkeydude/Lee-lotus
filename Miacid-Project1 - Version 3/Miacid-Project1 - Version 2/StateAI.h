@@ -10,6 +10,7 @@ using namespace std;
 class BaseState{
 public:
   string GetStateName(void);
+  void printValidMoves(void);
 
   //these will occur in the concrete states
   virtual void movePiece(void) = 0;
@@ -20,6 +21,7 @@ protected:
   vector<int> validMoves_;
   PIECE playernum;
   string stateName_;
+  boolean stateThreeCheck(int, int);
   boolean checkPos(vector<int>, int);
   int isState(int);
 };
